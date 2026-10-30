@@ -1,0 +1,10 @@
+# Client / pipeline environment (venv38): Manim rendering + Kokoro fallback TTS. No torch needed here.
+manim
+kokoro-onnx
+
+# Serving environment (venv-vllm, separate): vLLM 0.31.0 built for CUDA 12.9 (driver 550 cannot run cu130)
+#   pip install vllm==0.31.0 --extra-index-url https://wheels.vllm.ai/0.31.0/cu129 \
+#       --extra-index-url https://download.pytorch.org/whl/cu129 && pip uninstall -y torchcodec
+# Indian-English TTS environment (venv-tts, separate; parler-tts pins its own transformers):
+#   pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu126
+#   pip install git+https://github.com/huggingface/parler-tts.git soundfile
