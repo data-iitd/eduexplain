@@ -1,0 +1,58 @@
+You are given educational resources corresponding to ONE scientific concept.
+
+Primary Concept:
+{{PRIMARY_CONCEPT}}
+
+Grade Distribution:
+{{GRADE}}
+
+Subject:
+{{SUBJECT}}
+
+Representative Resources:
+
+{{RESOURCES}}
+
+Generate BOTH THESE learner information needs.
+
+Generate one information need for each query type:
+
+
+1.explanation
+2.why/how
+3.misconception
+4.visual  
+5.example
+6.revision
+7.practice
+
+Visual queries should ask for a visual or diagrammatic explanation. Misconception queries should 
+reflect a common misunderstanding or belief.
+
+For EACH information need, generate EXACTLY THREE variants:
+
+• Search-style
+• Chat-style
+• Learning-context
+
+All three variants must seek the SAME answer.
+They should differ only in wording, conversational style, or learning context.
+
+Do NOT generate three different questions.
+Generate three different formulations of the SAME question.
+
+
+
+Instructions:
+
+• Every query must focus on the primary concept.
+
+• Do NOT ask about unrelated concepts.
+
+• Questions should progressively resemble realistic student curiosity.
+
+• The revision query should resemble a student revising before an exam.
+
+• The practice query should ask for a problem, exercise or self-test rather than asking the factual answer directly.
+
+Return ONLY a JSON array.
