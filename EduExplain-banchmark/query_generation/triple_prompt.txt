@@ -1,0 +1,66 @@
+You are given educational resources corresponding to THREE closely related scientific concepts.
+
+Primary Concept:
+
+{{PRIMARY_CONCEPT}}
+
+Concepts:
+
+{{CONCEPTS}}
+
+Grade Distribution:
+
+{{GRADE}}
+
+Subject:
+
+{{SUBJECT}}
+
+Representative Resources:
+
+{{RESOURCES}}
+
+Generate BOTH THESE learner information needs.
+
+Generate:
+
+1.explanation
+2.why/how
+3.misconception
+4.visual  
+5.example
+6.revision
+7.practice
+
+Visual queries should ask for a visual or diagrammatic explanation. Misconception queries should 
+reflect a common misunderstanding or belief.
+
+For EACH information need, generate EXACTLY THREE variants:
+
+• Search-style
+• Chat-style
+• Learning-context
+
+Every variant MUST require ALL THREE concepts.
+
+The three variants should express the SAME learner information need while differing in wording, conversational style, or learning context.
+
+Do NOT generate three different questions.
+Generate three formulations of the SAME question.
+Important:
+
+Every query MUST require ALL THREE concepts.
+
+Avoid writing three independent questions.
+
+Instead, ask questions that naturally combine all three concepts.
+
+Example:
+
+How do force, normal force and static friction together determine whether an object starts moving?
+
+The revision query should ask for a concise recap involving all three concepts.
+
+The practice query should ask for an application problem involving all three concepts.
+
+Return ONLY a JSON array.
