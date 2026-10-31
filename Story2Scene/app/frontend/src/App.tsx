@@ -8,7 +8,7 @@ import Study, { StudyResults } from './Study'
 import Stage1View from './Stage1'
 import Stage2View from './Stage2'
 import Stage3View from './Stage3'
-import Compare from './Compare'
+import CompareTab, { S1L, S2L } from './Compare'
 
 const LS = 'videoexplain.lastJob'
 const lsGet = () => { try { return localStorage.getItem(LS) } catch { return null } }
@@ -16,7 +16,7 @@ const lsSet = (v: string) => { try { localStorage.setItem(LS, v) } catch { /* ig
 const lsClear = () => { try { localStorage.removeItem(LS) } catch { /* ignore */ } }
 const errMsg = (e: unknown) => (e instanceof Error ? e.message : String(e))
 // tabs by URL hash, so the study can be shared as .../VideoModule/#study
-const hashTab = () => (location.hash === '#study' ? 'study' : location.hash === '#study-results' ? 'results' : 'make')
+const hashTab = () => (location.hash === '#study' ? 'study' : location.hash === '#study-results' ? 'results' : location.hash === '#compare' ? 'compare' : 'make')
 const etaText = (e?: { eta_min: unknown }) => (e ? (Array.isArray(e.eta_min) ? e.eta_min.join('-') : String(e.eta_min)) : '?')
 
 export default function App() {
@@ -27,9 +27,10 @@ export default function App() {
     <div className="mx-auto max-w-[1600px] p-3">
       <nav className="flex gap-1 border-b border-slate-300">
         <a href="#" className={tabCls(tab === 'make')}>🎬 Make a video</a>
+        <a href="#compare" className={tabCls(tab === 'compare')}>⚖️ Compare</a>
         <a href="#study" className={tabCls(tab === 'study')}>🗳️ User study</a>
       </nav>
-      <div className="pt-3">{tab === 'study' ? <Study /> : tab === 'results' ? <StudyResults /> : <Maker />}</div>
+      <div className="pt-3">{tab === 'study' ? <Study /> : tab === 'results' ? <StudyResults /> : tab === 'compare' ? <CompareTab lastJob={lsGet()} /> : <Maker />}</div>
     </div>
   )
 }
@@ -105,8 +106,6 @@ function Maker() {
   }
   const premade = jobs.filter((j) => j.premade)
   const recent = jobs.filter((j) => !j.premade)
-  const S1L: Record<string, string> = { auto: 'SetCoRe-LLM', manual: 'Manual', lw: 'SetCoRe-LW', e2e: 'SetCoRe-E2E', optiset: 'OptiSet', gold: 'Benchmark gold set' }
-  const S2L: Record<string, string> = { set2story: 'Set2Story', freeform: 'FreeForm', reference: 'Benchmark reference' }
 
   const st = (k: string): StageState => job?.stages?.[k] ?? 'pending'
   const eng = health?.engines
@@ -188,11 +187,8 @@ function Maker() {
         </Panel>
       </div>
 
-      {job?.status === 'done' && (
-        <details open className="rounded-lg border border-slate-300 bg-white p-3 text-sm">
-          <summary className="cursor-pointer font-medium">⚖️ Compare two configurations of this question</summary>
-          <div className="mt-2"><Compare job={job} jobs={jobs} s1={S1L} s2={S2L} /></div>
-        </details>
+      {job?.status === 'done' && jobs.filter((j) => j.status === 'done' && (job.spec?.query_id ? j.query_id === job.spec.query_id : j.query === job.spec?.query)).length > 1 && (
+        <p className="text-sm"><a href="#compare" className="text-blue-700 underline">⚖️ Compare this question's configurations side by side</a></p>
       )}
 
       <details open className="rounded-lg border border-slate-300 bg-white p-3 text-sm">

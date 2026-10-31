@@ -104,7 +104,8 @@ Input: the storyboard. Output: `final.mp4` with voice-over and subtitles (`video
   - the question box and the Stage 1 / Stage 2 method switches;
   - the three stage panels;
   - a gallery of precomputed results;
-  - a side-by-side view of two configurations of one question;
+  - the Compare tab (`app/frontend/src/Compare.tsx`): two finished configurations of one question side by side
+    (videos with "Play both", Stage 1 sets with shared / unique resources marked, storyboards);
   - the user-study tab (`app/backend/study.py`, `app/frontend/src/Study.tsx`).
 
 ## Models and hardware

@@ -1,13 +1,44 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Job, JobSummary } from './types'
-import { apiPath, figureUrl, getJob, isFig } from './api'
+import { apiPath, figureUrl, getJob, isFig, listJobs } from './api'
 import Stage2View from './Stage2'
 
-// Watch and compare: two finished configurations of the same question side by side (video, Stage 1 set, storyboard).
+// Compare tab: two finished configurations of the same question side by side (video, Stage 1 set, storyboard).
 // Resources in both Stage 1 sets are marked "in both"; "Play both" starts and pauses the two videos together.
+// The question picker lists questions with at least two finished runs; it starts on the job last opened in "Make a video".
 const short = (t?: string, n = 120) => (t && t.length > n ? t.slice(0, n) + '…' : t ?? '')
-export const configLabel = (j: JobSummary, s1: Record<string, string>, s2: Record<string, string>) =>
+export const S1L: Record<string, string> = { auto: 'SetCoRe-LLM', manual: 'Manual', lw: 'SetCoRe-LW', e2e: 'SetCoRe-E2E', optiset: 'OptiSet', gold: 'Benchmark gold set' }
+export const S2L: Record<string, string> = { set2story: 'Set2Story', freeform: 'FreeForm', reference: 'Benchmark reference' }
+export const configLabel = (j: JobSummary, s1: Record<string, string> = S1L, s2: Record<string, string> = S2L) =>
   `${j.stage1_label ?? s1[j.selection ?? 'auto'] ?? j.selection} + ${j.stage2_label ?? s2[j.stage2 ?? 'set2story'] ?? j.stage2}`
+const qkey = (j: JobSummary) => j.query_id ?? j.query
+// our full system first, so it is A by default
+const ours = (j: JobSummary) => (j.stage1_label ?? S1L[j.selection ?? 'auto']) === 'SetCoRe-LLM' && (j.stage2_label ?? S2L[j.stage2 ?? 'set2story']) === 'Set2Story'
+
+export default function CompareTab({ lastJob }: { lastJob: string | null }) {
+  const [jobs, setJobs] = useState<JobSummary[] | null>(null)
+  const [key, setKey] = useState<string | null>(null)
+  useEffect(() => { listJobs().then(setJobs).catch(() => setJobs([])) }, [])
+  const groups = new Map<string, JobSummary[]>()
+  for (const j of jobs ?? []) if (j.status === 'done') groups.set(qkey(j), [...(groups.get(qkey(j)) ?? []), j])
+  const keys = [...groups.keys()].filter((k) => groups.get(k)!.length > 1)
+  const last = (jobs ?? []).find((j) => j.id === lastJob)
+  const cur = key ?? (last && keys.includes(qkey(last)) ? qkey(last) : keys[0] ?? null)
+  if (!jobs) return <p className="text-sm text-slate-500">Loading…</p>
+  if (!cur) return <p className="text-sm text-slate-500">No question has two finished configurations yet. Run another Stage 1 / Stage 2 method of a question in "Make a video".</p>
+  const list = [...groups.get(cur)!].sort((a, b) => Number(ours(b)) - Number(ours(a)))
+  const a = last && qkey(last) === cur ? last.id : list[0].id
+  return (
+    <div className="space-y-3 rounded-lg border border-slate-300 bg-white p-3 text-sm">
+      <label className="block">Question
+        <select value={cur} onChange={(e) => setKey(e.target.value)} className="mt-1 block w-full min-w-0 rounded border p-1">
+          {keys.map((k) => { const g = groups.get(k)!; return <option key={k} value={k}>{g[0].query.length > 110 ? g[0].query.slice(0, 110) + '…' : g[0].query}{g[0].query_id ? ` · ${g[0].query_id}` : ''} ({g.length} runs)</option> })}
+        </select>
+      </label>
+      <Pair key={cur} jobs={list} first={a} />
+    </div>
+  )
+}
 
 function selected(j: Job | null) {
   const s = j?.stage1
@@ -49,23 +80,18 @@ function Side({ job, other, label, tone, vref }: { job: Job | null; other: Set<s
   )
 }
 
-export default function Compare({ job, jobs, s1, s2 }: { job: Job; jobs: JobSummary[]; s1: Record<string, string>; s2: Record<string, string> }) {
-  const qid = job.spec?.query_id as string | undefined, q = String(job.spec?.query ?? '')
-  const same = jobs.filter((j) => j.status === 'done' && (qid ? j.query_id === qid : j.query === q))
-  const others = same.filter((j) => j.id !== job.id)
-  const [leftId, setLeftId] = useState(job.id)
-  const [rightId, setRightId] = useState<string | null>(others[0]?.id ?? null)
-  const [left, setLeft] = useState<Job | null>(job)
+// two finished runs of one question (jobs: that question's runs, first: the initial A)
+function Pair({ jobs: same, first }: { jobs: JobSummary[]; first: string }) {
+  const [leftId, setLeftId] = useState(first)
+  const [rightId, setRightId] = useState<string | null>(same.find((j) => j.id !== first)?.id ?? null)
+  const [left, setLeft] = useState<Job | null>(null)
   const [right, setRight] = useState<Job | null>(null)
   const va = useRef<HTMLVideoElement | null>(null), vb = useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = useState(false)
-  // follow the job opened above
-  useEffect(() => { setLeftId(job.id); setLeft(job); setRightId((r) => (r && r !== job.id ? r : others[0]?.id ?? null)) }, [job.id]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (leftId === job.id) setLeft(job); else getJob(leftId).then(setLeft).catch(() => setLeft(null)) }, [leftId, job])
+  useEffect(() => { setLeft(null); getJob(leftId).then(setLeft).catch(() => setLeft(null)) }, [leftId])
   useEffect(() => { setRight(null); if (rightId) getJob(rightId).then(setRight).catch(() => setRight(null)) }, [rightId])
-  if (others.length === 0) return <p className="text-xs text-slate-500">Run another Stage 1 / Stage 2 configuration of this question to compare two videos side by side.</p>
   const ids = (j: Job | null) => new Set(selected(j).map((r) => r.id))
-  const lab = (id: string | null) => { const j = same.find((x) => x.id === id); return j ? configLabel(j, s1, s2) : '' }
+  const lab = (id: string | null) => { const j = same.find((x) => x.id === id); return j ? configLabel(j) : '' }
   function both() {
     const vs = [va.current, vb.current].filter((v): v is HTMLVideoElement => !!v)
     if (playing) { vs.forEach((v) => v.pause()); setPlaying(false); return }
@@ -73,7 +99,7 @@ export default function Compare({ job, jobs, s1, s2 }: { job: Job; jobs: JobSumm
   }
   const picker = (v: string | null, set: (id: string) => void, not: string | null) => (
     <select value={v ?? ''} onChange={(e) => { set(e.target.value); setPlaying(false) }} className="min-w-0 max-w-full rounded border p-1 text-sm">
-      {same.filter((j) => j.id !== not).map((j) => <option key={j.id} value={j.id}>{configLabel(j, s1, s2)}{j.premade ? '' : ' (your run)'}</option>)}
+      {same.filter((j) => j.id !== not).map((j) => <option key={j.id} value={j.id}>{configLabel(j)}{j.premade ? '' : ' (your run)'}</option>)}
     </select>
   )
   return (
