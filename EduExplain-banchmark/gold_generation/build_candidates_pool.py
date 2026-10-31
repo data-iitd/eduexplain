@@ -14,7 +14,7 @@ from sentence_transformers import SentenceTransformer
 # ==========================================================
 SCRIPT_DIR=Path(__file__).resolve().parent
 DATA_DIR=SCRIPT_DIR/"data"
-MAIN_QUERY_PATH = "./query_generation/main_queries.json"
+MAIN_QUERY_PATH = "./query_generation/main_queries_new.json"
 
 RESOURCE_PATH = "./data/all_resources_unique_ids_clean1_merged.json"
 
