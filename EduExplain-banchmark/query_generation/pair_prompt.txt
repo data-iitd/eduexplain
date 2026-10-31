@@ -1,0 +1,70 @@
+You are given educational resources corresponding to TWO closely related scientific concepts.
+
+Primary Concept:
+
+{{PRIMARY_CONCEPT}}
+
+Concepts:
+
+{{CONCEPTS}}
+
+Grade Distribution:
+
+{{GRADE}}
+
+Subject:
+
+{{SUBJECT}}
+
+Representative Resources:
+
+{{RESOURCES}}
+
+Generate BOTH THESE learner information needs.
+
+Generate:
+
+1.explanation
+2.why/how
+3.misconception
+4.visual  
+5.example
+6.revision
+7.practice
+
+Visual queries should ask for a visual or diagrammatic explanation. Misconception queries should 
+reflect a common misunderstanding or belief.
+
+For EACH information need, generate EXACTLY THREE variants:
+
+• Search-style
+• Chat-style
+• Learning-context
+
+Every variant MUST require BOTH concepts.
+
+The three variants should all retrieve the SAME educational resources.
+
+Do NOT simply replace words with synonyms.
+
+Important:
+
+Every query MUST require BOTH concepts.
+
+Bad:
+
+Explain Static Friction.
+
+Explain Normal Force.
+
+Good:
+
+How does the normal force affect static friction?
+
+Why does increasing the normal force increase friction?
+
+Can you compare the roles of normal force and friction while pushing a box?
+
+The two concepts should be genuinely integrated.
+
+Return ONLY a JSON array.
