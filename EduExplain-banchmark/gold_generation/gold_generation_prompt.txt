@@ -1,0 +1,76 @@
+Learner Query
+
+{{QUERY}}
+
+------------------------------------------------------------
+
+Candidate Resource Pool
+
+{{RESOURCES}}
+
+------------------------------------------------------------
+
+Task
+
+You are constructing gold-standard explanation sets for an educational retrieval benchmark.
+
+An explanation set consists of:
+
+• A minimal subset of the provided candidate resources. An explanation set cannot contain only figures.
+• A concise educational explanation that answers the learner query using only those selected resources.
+• A rationale explaining why the selected resources are sufficient.
+
+Your objective is to generate every meaningfully distinct explanation set that can answer the learner query.
+
+Guidelines
+
+• Carefully consider the entire candidate resource pool before selecting resources.
+
+• Select the minimum number of resources needed. Only include resources that contribute essential information to answering the learner query. Do not include resources that are redundant, tangential, or provide information already covered by another selected resource. The selected resource set should be the smallest sufficient set capable of supporting a complete, accurate, and educational explanation.
+
+• Every factual statement in the explanation must be supported by one or more of the selected resources.
+
+• Do not introduce external knowledge or assumptions that are not supported by the selected resources.
+
+• Every selected resource must contribute meaningful information to the explanation.
+
+• Generate as many explanation sets as are meaningfully distinct. If only one valid explanation set exists, return one. Do not invent artificial variations simply to increase the number of explanation sets.
+
+• Explanation sets should differ in either:
+  - the resources selected,
+  - the educational emphasis,
+  - or the overall explanation strategy.
+
+• Do not generate explanation sets that differ only in wording or sentence structure.
+
+• Each explanation should be suitable for approximately a 2–3 minute educational explanation.
+
+• For every explanation set, provide a brief rationale explaining why the selected resources are sufficient to answer the learner query and why additional candidate resources are unnecessary.
+
+------------------------------------------------------------
+
+Return the output as valid JSON in exactly the following format:
+
+{
+    "gold_sets": [
+        {
+            "resources_used": [
+                {
+                    "resource_id": "...",
+                    "resource_type": "...",
+                    "summary": "...",
+                    "description": "...",
+                    "document_id": "..."
+                }
+            ],
+            "answer": "...",
+            "rationale": "..."
+        }
+    ]
+}
+
+Return ONLY valid JSON.
+
+Don't change any of the text in the summmary, description, resource_id, document_id and resource_type. Copy them from the resources byte for byte. Absolutely no changes here.
+
+Do not include markdown, code fences, comments, or any additional text outside the JSON object.
