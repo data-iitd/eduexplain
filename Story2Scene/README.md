@@ -151,10 +151,21 @@ python video_module/pipeline.py -s storyboard.json \
   --gen-url http://127.0.0.1:8000/v1 --ver-url http://127.0.0.1:8001/v1 --max-rounds 3
 ```
 
-Corpus, benchmark, figures and model weights are not part of this repository. Paths default to the original
-deployment and can be changed through environment variables, among them `SETCORE_DIR`, `BGE_DIR`, `VIDEOMODULE`,
-`S2S_PY`, `S2S_GEN_URL`, `VX_STAGE1_LLM_URL`, `VIDEO_FIGURE_MAPPING`, `VIDEO_FIGURES_DIR` and
-`VIDEO_RESOURCES_JSON`.
+The corpus and the benchmark are in this repository: the resources and the gold sets in
+[`../EduExplain-banchmark/data/`](../EduExplain-banchmark/data/), the reference storyboards in
+[`../Storyboard_Gen/benchmark/`](../Storyboard_Gen/benchmark/). The figure images and the model weights are not.
+Paths default to the original deployment; point them at the repository copies with:
+
+```bash
+export SETCORE_DIR=$PWD/../EduExplain-banchmark/data      # resources + gold sets (run from Story2Scene/)
+export VIDEO_RESOURCES_JSON=$SETCORE_DIR/all_resources_unique_ids_clean1_merged.json
+export BENCH_SB=$PWD/../Storyboard_Gen/benchmark/Storyboard_BenchMark.json
+export BGE_DIR=<models dir>/bge-large-en-v1.5             # default: $SETCORE_DIR/models/bge-large-en-v1.5
+export VIDEO_FIGURES_DIR=<figures dir>                    # figure images + figure_id_mapping.csv
+```
+
+Other paths can be changed the same way, among them `VIDEOMODULE`, `S2S_PY`, `S2S_GEN_URL`,
+`VX_STAGE1_LLM_URL` and `VIDEO_FIGURE_MAPPING`.
 
 ## Evaluation scripts
 

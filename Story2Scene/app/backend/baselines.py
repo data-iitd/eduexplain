@@ -23,11 +23,11 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 S2S_PY = os.getenv("S2S_PY", "/mnt/storage/aryan/set2story/venv/bin/python")
-SETCORE = Path(os.getenv("SETCORE", "/mnt/storage/aryan/setCore"))
+SETCORE = Path(os.getenv("SETCORE_DIR", os.getenv("SETCORE", "/mnt/storage/aryan/setCore")))
 BENCH_Q = SETCORE / "gold_sets_final_validated_new_merged.json"
 BENCH_SB = Path(os.getenv("BENCH_SB", "/mnt/storage/aryan/set2story/BenchMark/Storyboard_BenchMark.json"))
 RESOURCES = SETCORE / "all_resources_unique_ids_clean1_merged.json"
-BGE = SETCORE / "models" / "bge-large-en-v1.5"
+BGE = Path(os.getenv("BGE_DIR", str(SETCORE / "models" / "bge-large-en-v1.5")))
 STAGE1 = {"auto": "SetCoRe-LLM", "manual": "Manual", "lw": "SetCoRe-LW", "e2e": "SetCoRe-E2E", "optiset": "OptiSet",
           "gold": "Benchmark gold set"}
 MODELS = Path(os.getenv("VX_MODELS", str(HERE.parent / "models")))

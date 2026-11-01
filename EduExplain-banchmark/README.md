@@ -39,10 +39,15 @@ python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Run this inside `EduExplain-banchmark/`. `requirements.txt` is grouped by use:
 `torch`, `transformers` and `sentence-transformers` are needed throughout;
 `FlagEmbedding` for BGE-M3 (the dense retriever falls back to
 sentence-transformers without it); `open_clip_torch` and `pillow` only for the
-multimodal baseline; `scipy` only for significance testing.
+multimodal baseline; `pdfplumber`, `opencv-python-headless`, `pymupdf`,
+`rank-bm25` and `faiss-cpu` only for building the benchmark. The alternative PDF
+backends (`marker-pdf`, `docling`), the figure detector (`doclayout-yolo`) and
+`qwen-vl-utils` for the figure-description notebook are commented out; install
+them only if you use those steps.
 
 ### Local models
 

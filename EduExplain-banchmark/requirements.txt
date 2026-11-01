@@ -1,0 +1,26 @@
+# Core: LLM stages (query / gold-set generation, summarisation, concept annotation) and the dense retriever
+numpy
+torch
+transformers>=4.57        # >=4.57 for Qwen3-VL (rerank_retriever.py)
+accelerate
+sentence-transformers
+FlagEmbedding             # BGE-M3; dense_retriever.py falls back to sentence-transformers without it
+tqdm
+
+# Multimodal retrieval baseline (baselines/openclip_retriever.py)
+open_clip_torch
+pillow
+
+# Benchmark construction
+pdfplumber                # parser/, extraction/ (default backend)
+opencv-python-headless    # parser/ncert_parser_v3.py, image_handling/extract_figures.py
+pymupdf                   # image_handling/pdf_to_images.py
+rank-bm25                 # gold_generation/build_candidates_pool.py, bm25_retrieval/
+faiss-cpu                 # gold_generation/build_candidates_pool.py
+huggingface_hub           # image_handling/extract_figures.py (layout model download)
+
+# Optional: alternative PDF backends, figure detection and VLM figure descriptions
+# marker-pdf              # extraction/marker_extractor.py (--backend marker)
+# docling                 # extraction/docling_extractor.py
+# doclayout-yolo          # image_handling/extract_figures.py
+# qwen-vl-utils           # image_handling/image_description.ipynb
